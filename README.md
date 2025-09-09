@@ -1,0 +1,185 @@
+
+# A1: Docker Containers — Cloud Computing for Data Analysis (ITCS 6190/8190, Fall 2025)
+
+This project is **Assignment 1** for Cloud Computing for Data Analysis.  
+It builds a **two-container stack** using Docker Compose:
+
+- **Service 1: PostgreSQL**  
+  Runs a seeded database with a `trips` table (city, minutes, fare).  
+- **Service 2: Python app**  
+  Connects to PostgreSQL, runs queries, computes simple stats, prints summary to stdout, and saves `/out/summary.json`.
+
+---
+
+## 🚀 How to Run
+
+Make sure you have installed:
+- Docker Desktop
+- Docker Compose
+- Git (optional, for version control)
+
+### One-command run
+
+From the project root:
+```bash
+docker compose up --build
+```
+
+This will:
+
+- Build the images  
+- Start PostgreSQL  
+- Wait until DB is healthy  
+- Run the Python app  
+- Print a JSON summary  
+- Save results to `out/summary.json`
+
+### Using the Makefile (optional)
+
+```bash
+make up     # build + start
+make down   # stop + remove containers/volumes
+make clean  # full reset (clears out/ folder)
+```
+
+---
+
+## 📊 Example Output
+
+**Terminal (stdout):**
+
+```json
+=== Summary ===
+{
+  "total_trips": 6,
+  "avg_fare_by_city": [
+    {
+      "city": "New York",
+      "avg_fare": 19.0
+    },
+    {
+      "city": "San Francisco",
+      "avg_fare": 20.25
+    },
+    {
+      "city": "Charlotte",
+      "avg_fare": 16.25
+    }
+  ],
+  "top_by_minutes": [
+    {
+      "city": "San Francisco",
+      "minutes": 28,
+      "fare": 29.3
+    },
+    {
+      "city": "New York",
+      "minutes": 26,
+      "fare": 27.1
+    },
+    {
+      "city": "Charlotte",
+      "minutes": 21,
+      "fare": 20.0
+    },
+    {
+      "city": "Charlotte",
+      "minutes": 12,
+      "fare": 12.5
+    },
+    {
+      "city": "San Francisco",
+      "minutes": 11,
+      "fare": 11.2
+    },
+    {
+      "city": "New York",
+      "minutes": 9,
+      "fare": 10.9
+    }
+  ]
+}
+```
+
+**File (`out/summary.json`):**
+
+```json
+{
+  "total_trips": 6,
+  "avg_fare_by_city": [
+    {
+      "city": "New York",
+      "avg_fare": 19.0
+    },
+    {
+      "city": "San Francisco",
+      "avg_fare": 20.25
+    },
+    {
+      "city": "Charlotte",
+      "avg_fare": 16.25
+    }
+  ],
+  "top_by_minutes": [
+    {
+      "city": "San Francisco",
+      "minutes": 28,
+      "fare": 29.3
+    },
+    {
+      "city": "New York",
+      "minutes": 26,
+      "fare": 27.1
+    },
+    {
+      "city": "Charlotte",
+      "minutes": 21,
+      "fare": 20.0
+    },
+    {
+      "city": "Charlotte",
+      "minutes": 12,
+      "fare": 12.5
+    },
+    {
+      "city": "San Francisco",
+      "minutes": 11,
+      "fare": 11.2
+    },
+    {
+      "city": "New York",
+      "minutes": 9,
+      "fare": 10.9
+    }
+  ]
+}
+```
+
+
+## 🛠️ Troubleshooting
+
+- **DB not ready / app stuck at “Waiting for database…”**  
+  Run:
+  ```bash
+  docker compose down -v
+  docker compose up --build
+  ```
+
+- **Port 5432 already in use**  
+  Stop local Postgres or change the DB port in `compose.yml`.
+
+- **No summary.json created**  
+  Ensure `out/` exists and is mounted in `compose.yml`:
+  ```yaml
+  volumes:
+    - ./out:/out
+  ```
+
+- **Makefile not working**  
+  Ensure you used **tabs** (not spaces) before each command.
+
+
+
+## ✍️ Reflection
+
+Working on this project taught me how to spin up multiple containers with Docker Compose and have them talk to each other, which was a first for me. I really liked seeing how the database could be automatically seeded with data using an init script — it made the setup feel smooth and repeatable. I also ran into some of the classic issues like waiting for the database to be ready and figuring out volume mounts, which gave me a better feel for debugging container setups. If I were to improve this, I’d probably add more data, write some tests for the Python app, and try to slim down the Docker images a bit.
