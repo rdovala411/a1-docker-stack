@@ -1,0 +1,3 @@
+# a1-docker-stack/db/Dockerfile
+FROM postgres:16
+COPY init.sql /docker-entrypoint-initdb.d/
